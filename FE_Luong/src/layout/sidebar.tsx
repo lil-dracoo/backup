@@ -23,7 +23,10 @@ const SideBar = (props: LoginButtonProps) => {
 
   useEffect(() => {
     if (user?.role) {
-      setMenuItems(MenuConfig[user.role] || []);
+      // 1. Ép kiểu về chữ thường để đồng bộ (VD: "HR" -> "hr")
+      let roleKey = user.role.toLowerCase();
+      // 3. Đưa vào MenuConfig
+      setMenuItems(MenuConfig[roleKey] || []);
     }
   }, [user?.role]);
 

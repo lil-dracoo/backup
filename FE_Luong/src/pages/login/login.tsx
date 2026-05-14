@@ -1,23 +1,29 @@
 import { Box } from "@mui/material";
-import { useAuth } from "../../context/authcontext";
-import { useEffect } from "react";
+// Nếu bạn đã tự viết hook useAuth thì dùng, nếu không thì dùng useContext chuẩn như sau:
+import { AuthContext } from "../../context/authcontext"; 
+import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginRight from "./loginright";
 import LoginLeft from "./loginleft";
 
 const Login = () => {
-  const auth = useAuth();
+  // Thay useAuth bằng chuẩn useContext của React
+  const auth = useContext(AuthContext); 
   const navigation = useNavigate();
 
+  // Hiệu ứng lắng nghe: Nếu đã có thông tin user (đã đăng nhập) -> Tự động chuyển trang
   useEffect(() => {
-    if (auth && auth.user) {
-      if (auth.user.role === "hr") {
+    if (auth?.user?.role) {
+      // Đưa role về chữ thường để so sánh cho an toàn (ví dụ: 'HR' hay 'hr' đều nhận)
+      const role = auth.user.role.toLowerCase();
+
+      if (role === "hr") {
         navigation("/dashboard/hr");
-      } else if (auth.user.role === "emp") {
+      } else if ( role === "nhân viên") {
         navigation("/dashboard/emp");
-      } else if (auth.user.role === "manager") {
+      } else if (role === "quản lý") {
         navigation("/dashboard/manager");
-      } else if (auth.user.role === "account") {
+      } else if (role === "kế toán") {
         navigation("/dashboard/account");
       } else {
         navigation("/dashboard/board");
@@ -43,13 +49,11 @@ const Login = () => {
           backgroundColor: "rgba(0,0,0,0.5)",
           backdropFilter: "blur(1px)",
           display: "flex",
-          flexDirection: { xs: "column", md: "row" }, // Responsive: column trên mobile, row trên desktop
+          flexDirection: { xs: "column", md: "row" }, 
         }}
       >
-        {/* Left section */}
         <LoginLeft />
-
-        {/* Right section */}
+        {/* Ta sẽ không truyền gì vào LoginRight, nó sẽ tự gọi API và cập nhật Context */}
         <LoginRight />
       </Box>
     </Box>

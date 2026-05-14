@@ -5,7 +5,7 @@ import HRDashboard from "../pages/hr/hrdashboard";
 import AccountDashboard from "../pages/account/acdashboard";
 import ManagerDashboard from "../pages/manager/manadashboard";
 import EmployeeDashboard from "../pages/employee/empldashboard";
-import BoardDashboard from "../pages/board/bodashboard";
+import BoardDashboard from "../pages/board/dashboard";
 import MainLayout from "../layout/mainlayout";
 import HoSoNhanVien from "../pages/hr/hosonhanvien";
 import DuLieuTinhLuong from "../pages/hr/dulieutinhluong";

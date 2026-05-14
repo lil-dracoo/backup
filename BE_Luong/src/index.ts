@@ -1,18 +1,25 @@
 // cách ghi import này của TS 
 import express from 'express'; // Import thư viện express để tạo server 
 import 'dotenv/config' ;
-import webRoutes from './routes/webRoutes';
+import authRoutes from './routes/authRoutes';
+import cors from 'cors';
+
 
 const app = express();  // Khai báo đối tượng app từ express
 
-const PORT = process.env.PORT || 5000; // Khai báo PORT dùng cho server
+const PORT = process.env.PORT || 4000; // Khai báo PORT dùng cho server
+
+app.use(cors({
+    origin: 'http://localhost:5173', // Cổng mặc định của React Vite
+    credentials: true // Cho phép truyền token/cookie
+}));
 
 // Cấu hình cho req.body
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Cấu hình cho routes
-webRoutes(app);
+authRoutes(app);
 
 
 app.listen(PORT , () =>{
