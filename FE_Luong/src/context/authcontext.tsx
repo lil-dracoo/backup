@@ -1,7 +1,14 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, alpha } from "@mui/material";
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+} from "@mui/material";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 
 export interface JwtPayload {
   cccd?: string;
@@ -12,15 +19,19 @@ export interface JwtPayload {
 
 interface AuthContextType {
   user: JwtPayload | null;
+  isAuthReady: boolean;
   login: (token: string) => void;
   logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<JwtPayload | null>(null);
-  
+  const [isAuthReady, setIsAuthReady] = useState(false);
+
   // State quản lý việc bật/tắt Popup thông báo hết hạn
   const [isExpiredAlertOpen, setIsExpiredAlertOpen] = useState(false);
 
@@ -40,7 +51,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const decodedToken = jwtDecode<JwtPayload>(token);
         const currentTime = Date.now() / 1000;
-        
+
         if (decodedToken.exp < currentTime) {
           logout(true); // Token đã hết hạn từ trước
         } else {
@@ -50,6 +61,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout();
       }
     }
+
+    setIsAuthReady(true);
   }, []);
 
   // 2. Lớp bảo vệ kép: Lắng nghe Axios & Đếm ngược thời gian
@@ -61,8 +74,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Bộ đếm thời gian (Timer) tự động kích hoạt logout khi đến giờ
     let timer: ReturnType<typeof setTimeout>;
     if (user?.exp) {
-      const timeLeftInMilliseconds = (user.exp * 1000) - Date.now();
-      
+      const timeLeftInMilliseconds = user.exp * 1000 - Date.now();
+
       if (timeLeftInMilliseconds <= 0) {
         logout(true);
       } else {
@@ -92,53 +105,59 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthReady, login, logout }}>
       {children}
 
       {/* POPUP THÔNG BÁO HẾT HẠN */}
-      <Dialog 
-        open={isExpiredAlertOpen} 
+      <Dialog
+        open={isExpiredAlertOpen}
         onClose={handleCloseAlert}
         maxWidth="xs"
         fullWidth
         sx={{
           "& .MuiDialog-paper": {
-            borderRadius: 3, 
-            boxShadow: "0 20px 40px rgba(0,0,0,0.2)"
-          }
+            borderRadius: 3,
+            boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+          },
         }}
       >
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, pb: 1 }}>
-          <WarningAmberIcon sx={{ color: '#f59e0b', fontSize: 28 }} />
-          <Typography sx={{ fontWeight: 700, fontSize: "1.15rem", color: '#0f172a' }}>
+        <DialogTitle
+          sx={{ display: "flex", alignItems: "center", gap: 1.5, pb: 1 }}
+        >
+          <WarningAmberIcon sx={{ color: "#f59e0b", fontSize: 28 }} />
+          <Typography
+            sx={{ fontWeight: 700, fontSize: "1.15rem", color: "#0f172a" }}
+          >
             Phiên đăng nhập hết hạn
           </Typography>
         </DialogTitle>
         <DialogContent>
-          <Typography sx={{ color: '#475569', fontSize: "0.95rem", lineHeight: 1.5 }}>
-            Vì lý do bảo mật, thời gian truy cập của bạn đã kết thúc. Vui lòng đăng nhập lại để tiếp tục sử dụng hệ thống.
+          <Typography
+            sx={{ color: "#475569", fontSize: "0.95rem", lineHeight: 1.5 }}
+          >
+            Vì lý do bảo mật, thời gian truy cập của bạn đã kết thúc. Vui lòng
+            đăng nhập lại để tiếp tục sử dụng hệ thống.
           </Typography>
         </DialogContent>
         <DialogActions sx={{ p: 2.5, pt: 1 }}>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             fullWidth
-            onClick={handleCloseAlert} 
-            sx={{ 
-              bgcolor: '#2563eb', 
-              color: 'white',
+            onClick={handleCloseAlert}
+            sx={{
+              bgcolor: "#2563eb",
+              color: "white",
               py: 1,
               borderRadius: 2,
               fontWeight: 600,
-              textTransform: 'none',
-              '&:hover': { bgcolor: '#1d4ed8' }
+              textTransform: "none",
+              "&:hover": { bgcolor: "#1d4ed8" },
             }}
           >
             Đăng nhập lại
           </Button>
         </DialogActions>
       </Dialog>
-
     </AuthContext.Provider>
   );
 };
@@ -146,7 +165,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth BẮT BUỘC phải được sử dụng bên trong <AuthProvider>");
+    throw new Error(
+      "useAuth BẮT BUỘC phải được sử dụng bên trong <AuthProvider>",
+    );
   }
   return context;
 };

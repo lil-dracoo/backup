@@ -1,240 +1,111 @@
 import { Box, Chip, Avatar } from "@mui/material";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTheme } from "../../context/themecontext";
-import {
-  type GridColDef,
-} from "@mui/x-data-grid";
+import { type GridColDef } from "@mui/x-data-grid";
 
-import HeaderEmployeeRecord from "../../components/hr/employee_record/header";
 import EmpTable from "../../components/hr/employee_record/card_table";
-import SidePanel from "../../components/hr/employee_record/sidepanel";
 
-// Custom toolbar với nút tùy chỉnh cột
 
-const employeeDataSample = [
-  {
-    id: 1,
-    maNhanVien: "NV001",
-    hoTen: "Nguyễn Trúc Linh",
-    viTri: "HRBP Senior",
-    phongBan: "Nhân sự",
-    email: "linh.nguyen@company.com",
-    soDienThoai: "0912345678",
-    ngaySinh: "1990-05-15",
-    diaChi: "123 Nguyễn Huệ, TP.HCM",
-    ngayVaoLam: "2018-03-01",
-    loaiHopDong: "Full-time",
-    trangThai: "Đang làm việc",
-    luongHienTai: "45.5 triệu",
-  },
-  {
-    id: 2,
-    maNhanVien: "NV002",
-    hoTen: "Phạm Hoàng Duy",
-    viTri: "Recruiter",
-    phongBan: "Nhân sự",
-    email: "duy.pham@company.com",
-    soDienThoai: "0923456789",
-    ngaySinh: "1995-08-22",
-    diaChi: "456 Lê Lợi, Hà Nội",
-    ngayVaoLam: "2019-06-15",
-    loaiHopDong: "Full-time",
-    trangThai: "Đang làm việc",
-    luongHienTai: "22.3 triệu",
-  },
-  {
-    id: 3,
-    maNhanVien: "NV003",
-    hoTen: "Lê Minh Anh",
-    viTri: "C&B Specialist",
-    phongBan: "Nhân sự",
-    email: "anh.le@company.com",
-    soDienThoai: "0934567890",
-    ngaySinh: "1992-12-10",
-    diaChi: "789 Hàm Nghi, Đà Nẵng",
-    ngayVaoLam: "2017-09-01",
-    loaiHopDong: "Full-time",
-    trangThai: "Đang làm việc",
-    luongHienTai: "32.8 triệu",
-  },
-  {
-    id: 4,
-    maNhanVien: "NV004",
-    hoTen: "Võ Gia Hân",
-    viTri: "Kế toán",
-    phongBan: "Kế toán",
-    email: "han.vo@company.com",
-    soDienThoai: "0945678901",
-    ngaySinh: "1993-03-28",
-    diaChi: "321 Bạch Đằng, Hải Phòng",
-    ngayVaoLam: "2020-01-10",
-    loaiHopDong: "Full-time",
-    trangThai: "Đang làm việc",
-    luongHienTai: "18.5 triệu",
-  },
-  {
-    id: 5,
-    maNhanVien: "NV005",
-    hoTen: "Trần Hữu Nam",
-    viTri: "Quản lý sản xuất",
-    phongBan: "Sản xuất",
-    email: "nam.tran@company.com",
-    soDienThoai: "0956789012",
-    ngaySinh: "1988-11-05",
-    diaChi: "654 Phạm Văn Đồng, Cần Thơ",
-    ngayVaoLam: "2016-05-20",
-    loaiHopDong: "Full-time",
-    trangThai: "Đang làm việc",
-    luongHienTai: "38.2 triệu",
-  },
-  {
-    id: 6,
-    maNhanVien: "NV006",
-    hoTen: "Lê Minh Quân",
-    viTri: "Chuyên viên nhân sự",
-    phongBan: "Nhân sự",
-    email: "quan.le@company.com",
-    soDienThoai: "0912345678",
-    ngaySinh: "1994-03-14",
-    diaChi: "12 Nguyễn Huệ, Đà Nẵng",
-    ngayVaoLam: "2020-09-10",
-    loaiHopDong: "Full-time",
-    trangThai: "Đang làm việc",
-    luongHienTai: "18.5 triệu",
-  },
-
-  {
-    id: 7,
-    maNhanVien: "NV007",
-    hoTen: "Phạm Thu Hằng",
-    viTri: "Kế toán trưởng",
-    phongBan: "Tài chính",
-    email: "hang.pham@company.com",
-    soDienThoai: "0988123456",
-    ngaySinh: "1987-07-22",
-    diaChi: "45 Võ Văn Kiệt, TP.HCM",
-    ngayVaoLam: "2015-11-03",
-    loaiHopDong: "Full-time",
-    trangThai: "Đang làm việc",
-    luongHienTai: "32.8 triệu",
-  },
-
-  {
-    id: 8,
-    maNhanVien: "NV008",
-    hoTen: "Nguyễn Quốc Bảo",
-    viTri: "Frontend Developer",
-    phongBan: "Công nghệ",
-    email: "bao.nguyen@company.com",
-    soDienThoai: "0933445566",
-    ngaySinh: "1999-01-09",
-    diaChi: "88 Lê Lợi, Huế",
-    ngayVaoLam: "2023-02-15",
-    loaiHopDong: "Full-time",
-    trangThai: "Đang làm việc",
-    luongHienTai: "21.3 triệu",
-  },
-
-  {
-    id: 9,
-    maNhanVien: "NV009",
-    hoTen: "Đỗ Gia Huy",
-    viTri: "Chuyên viên Marketing",
-    phongBan: "Marketing",
-    email: "huy.do@company.com",
-    soDienThoai: "0977665544",
-    ngaySinh: "1996-05-18",
-    diaChi: "101 Trần Hưng Đạo, Hải Phòng",
-    ngayVaoLam: "2021-06-01",
-    loaiHopDong: "Part-time",
-    trangThai: "Đang làm việc",
-    luongHienTai: "15.7 triệu",
-  },
-
-  {
-    id: 10,
-    maNhanVien: "NV010",
-    hoTen: "Bùi Thanh Tâm",
-    viTri: "UI/UX Designer",
-    phongBan: "Thiết kế",
-    email: "tam.bui@company.com",
-    soDienThoai: "0909988776",
-    ngaySinh: "1997-12-30",
-    diaChi: "77 Điện Biên Phủ, Nha Trang",
-    ngayVaoLam: "2022-08-12",
-    loaiHopDong: "Full-time",
-    trangThai: "Đang làm việc",
-    luongHienTai: "19.9 triệu",
-  },
-  {
-    id: 11,
-    maNhanVien: "NV011",
-    hoTen: "Bùi Thanh Tâm",
-    viTri: "UI/UX Designer",
-    phongBan: "Thiết kế",
-    email: "tam.bui@company.com",
-    soDienThoai: "0909988776",
-    ngaySinh: "1997-12-30",
-    diaChi: "77 Điện Biên Phủ, Nha Trang",
-    ngayVaoLam: "2022-08-12",
-    loaiHopDong: "Full-time",
-    trangThai: "Đang làm việc",
-    luongHienTai: "19.9 triệu",
-  },
-];
+import { GetData_NhanVien } from "../../services/api.service";
 
 const HoSoNhanVien = () => {
   const { isDark } = useTheme();
-  const [selectedEmployee, setSelectedEmployee] = useState<
-    (typeof employeeDataSample)[0] | null
-  >(null);
-  const [detailTabValue, setDetailTabValue] = useState(0);
-  // const [isColumnDrawerOpen, setIsColumnDrawerOpen] = useState(false);
+
+  // =========================
+  // API DATA
+  // =========================
+
+  const [employeeDataSample, setEmployeeDataSample] = useState<any[]>([]);
+
+  useEffect(() => {
+    GetData();
+  }, []);
+
+  const GetData = async () => {
+    try {
+      const req = await GetData_NhanVien();
+
+      console.log(req.data.data);
+
+      // ADD ID CHO TABLE
+      const dataWithId = req.data.data.map(
+        (item: any, index: number) => ({
+          ...item,
+          id: index + 1,
+        }),
+      );
+
+      setEmployeeDataSample(dataWithId);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // =========================
+  // DETAIL PANEL
+  // =========================
+
+  const [, setSelectedEmployee] =
+    useState<any | null>(null);
+
+  const [, setDetailTabValue] = useState(0);
+
+
+
+  // =========================
+  // COLUMN VISIBILITY
+  // =========================
+
   const [columnVisibilityModel, setColumnVisibilityModel] = useState<
     Record<string, boolean>
   >(() => {
-    // Load từ localStorage nếu có
     const saved = localStorage.getItem("employeeGridColumns");
+
     if (saved) {
       return JSON.parse(saved);
     }
+
     return {
-      maNhanVien: true,
-      hoTen: true,
-      viTri: true,
-      phongBan: true,
+      cccd: true,
+      ho_ten: true,
+      vi_tri: true,
+      phong_ban: true,
       email: true,
-      soDienThoai: true,
-      ngaySinh: true,
-      ngayVaoLam: true,
-      luongHienTai: true,
-      trangThai: true,
+      sdt: true,
+      ngay_sinh: true,
+      ngay_vao_lam: true,
+      luong_hien_tai: true,
+      trang_thai: true,
     };
   });
 
-  const handleDetailTabChange = (
-    event: React.SyntheticEvent,
-    newValue: number,
-  ) => {
-    setDetailTabValue(newValue);
-  };
+  // =========================
+  // COLUMNS
+  // =========================
 
-  // Định nghĩa columns - BỎ PINNED vì bản free không hỗ trợ tốt
   const employeeColumns = useMemo<GridColDef[]>(() => {
     return [
       {
-        field: "maNhanVien",
+        field: "cccd",
         headerName: "Mã NV",
-        width: 100,
+        width: 120,
         filterable: true,
       },
+
       {
-        field: "hoTen",
+        field: "ho_ten",
         headerName: "Họ tên",
-        width: 180,
+        width: 220,
         filterable: true,
+
         renderCell: (params) => (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+            }}
+          >
             <Avatar
               sx={{
                 width: 28,
@@ -245,73 +116,91 @@ const HoSoNhanVien = () => {
             >
               {params.value?.charAt(0) || "N"}
             </Avatar>
+
             {params.value}
           </Box>
         ),
       },
+
       {
-        field: "viTri",
+        field: "vi_tri",
         headerName: "Vị trí",
         width: 180,
         filterable: true,
       },
+
       {
-        field: "phongBan",
+        field: "phong_ban",
         headerName: "Phòng ban",
-        width: 130,
+        width: 150,
         filterable: true,
       },
+
       {
         field: "email",
         headerName: "Email",
-        width: 200,
+        width: 250,
         filterable: true,
       },
+
       {
-        field: "soDienThoai",
+        field: "sdt",
         headerName: "Điện thoại",
-        width: 130,
+        width: 140,
         filterable: true,
       },
+
       {
-        field: "ngaySinh",
+        field: "ngay_sinh",
         headerName: "Ngày sinh",
-        width: 120,
+        width: 140,
         filterable: true,
       },
+
       {
-        field: "ngayVaoLam",
+        field: "ngay_vao_lam",
         headerName: "Ngày vào làm",
-        width: 130,
+        width: 160,
         filterable: true,
       },
+
       {
-        field: "luongHienTai",
+        field: "luong_hien_tai",
         headerName: "Lương hiện tại",
-        width: 130,
+        width: 160,
         align: "right",
         headerAlign: "right",
         filterable: true,
       },
+
       {
-        field: "trangThai",
+        field: "trang_thai",
         headerName: "Trạng thái",
-        width: 130,
+        width: 150,
+        filterable: true,
+
         renderCell: (params) => (
           <Chip
             label={params.value as string}
             size="small"
             sx={{
-              bgcolor: isDark ? "rgba(22, 163, 74, 0.2)" : "#dcfce7",
+              bgcolor: isDark
+                ? "rgba(22, 163, 74, 0.2)"
+                : "#dcfce7",
+
               color: isDark ? "#86efac" : "#166534",
+
               fontWeight: 600,
             }}
           />
         ),
-        filterable: true,
       },
     ];
   }, [isDark]);
+
+  // =========================
+  // RENDER
+  // =========================
 
   return (
     <Box
@@ -321,15 +210,13 @@ const HoSoNhanVien = () => {
         flexDirection: "column",
         flex: 1,
         overflow: "hidden",
+
         p: {
           xs: 0.5,
           md: 0,
         },
       }}
     >
-      {/* <HeaderEmployeeRecord isDark={isDark} /> */}
-
-      {/* Employee Table */}
       <EmpTable
         isDark={isDark}
         employeeDataSample={employeeDataSample}
@@ -340,15 +227,7 @@ const HoSoNhanVien = () => {
         setDetailTabValue={setDetailTabValue}
       />
 
-      {/* Detail Side Panel - Giữ nguyên từ code cũ */}
-      <SidePanel
-        isDark={isDark}
-        selectedEmployee={selectedEmployee}
-        setSelectedEmployee={setSelectedEmployee}
-        detailTabValue={detailTabValue}
-        handleDetailTabChange={handleDetailTabChange}
-      />
-    </Box>
+      </Box>
   );
 };
 

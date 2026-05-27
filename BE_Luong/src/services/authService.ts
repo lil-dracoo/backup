@@ -1,16 +1,11 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { prisma } from "../config/prisma";
+import {authRepository} from "../repositories/authRepository";
 
 const loginService = async (ten_tai_khoan: string, mat_khau: string) => {
   // 1. Prisma sử dụng findUnique thay vì findByPk
-  const user = await prisma.tai_khoan.findUnique({
-    where: { ten_tai_khoan: ten_tai_khoan },
-    include: {
-      nhan_vien: true, // Lấy thông tin nhân viên (Relation)
-      vai_tro: true    // Lấy thông tin phân quyền
-    }
-  });
+  const user = await authRepository.findUser(ten_tai_khoan);
 
   if (!user) throw new Error("Tài khoản / mật khẩu không chính xác");
 
@@ -32,7 +27,7 @@ const token = jwt.sign(
     role: user.vai_tro?.ten_vai_tro 
   },
   secret,
-  {expiresIn: "5m"}
+  {expiresIn: "30m"}
 );
 
   return {

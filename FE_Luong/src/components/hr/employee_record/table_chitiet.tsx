@@ -1,23 +1,64 @@
 import { Box } from "@mui/material";
 import { ConfigProvider, Table } from "antd";
+import { useNavigate } from "react-router-dom";
 import { getEmployeeTableStyles } from "../../../styles/hr_table_styles";
 interface ITableChiTietProps {
   isDark: boolean;
   columns: any[];
   filteredData: any[];
-  setSelectedEmployee: React.Dispatch<React.SetStateAction<any>>;
   setDetailTabValue: React.Dispatch<React.SetStateAction<number>>;
+  setSelectedEmployee: (employee: any) => void;
   ResizableTitle: any;
 }
+
 const TableChiTiet = (props: ITableChiTietProps) => {
+  const navigate = useNavigate();
   const {
     isDark,
     columns,
     filteredData,
-    setSelectedEmployee,
-    setDetailTabValue,
+
     ResizableTitle,
   } = props;
+
+  // CUSTOM COLUMN CLICK CCCD
+  const customColumns = columns.map((col: any) => {
+    if (col.dataIndex === "cccd") {
+      return {
+        ...col,
+
+        render: (value: any, record: any) => (
+          <span
+            onClick={async(e) => {
+              e.stopPropagation();
+              // API CALL LẤY CHI TIẾT NHÂN VIÊN
+              // try {
+              //   const req = await ChiTietNhanVien(record.cccd);
+
+              //   setSelectedEmployee(req.data);
+
+              //   setDetailTabValue(0);
+              // } catch (error) {
+              //   console.log(error);
+              // }
+              navigate(`${record.cccd}`);
+            }}
+            style={{
+              color: "#2563eb",
+              cursor: "pointer",
+              fontWeight: 600,
+              textDecoration: "underline",
+            }}
+          >
+            {value}
+          </span>
+        ),
+      };
+    }
+
+    return col;
+  });
+
   return (
     <Box
       sx={{
@@ -47,7 +88,7 @@ const TableChiTiet = (props: ITableChiTietProps) => {
             },
           }}
           rowKey="id"
-          columns={columns}
+          columns={customColumns}
           dataSource={filteredData}
           sticky
           bordered={false}
@@ -62,16 +103,10 @@ const TableChiTiet = (props: ITableChiTietProps) => {
 
             y: "calc(100vh - 200px)",
           }}
-          onRow={(record) => ({
-            onClick: () => {
-              setSelectedEmployee(record);
-
-              setDetailTabValue(0);
-            },
-          })}
         />
       </ConfigProvider>
     </Box>
   );
 };
+
 export default TableChiTiet;

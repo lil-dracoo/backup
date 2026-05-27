@@ -25,7 +25,11 @@ const Login = () => {
         navigation("/dashboard/manager");
       } else if (role === "kế toán") {
         navigation("/dashboard/account");
-      } else {
+      }
+      else if (role === "admin") {
+        navigation("/dashboard/admin");
+      }
+      else {
         navigation("/dashboard/board");
       }
     }

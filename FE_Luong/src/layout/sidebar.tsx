@@ -2,7 +2,7 @@ import { Drawer } from "@mui/material";
 import { useAuth } from "../context/authcontext";
 import { useTheme } from "../context/themecontext";
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SideBarHeader from "../components/sidebar/sidebarheader";
 import SideBarLogout from "../components/sidebar/sidebarlogout";
 import SideBarMenu from "../components/sidebar/sidebarmenu";
@@ -19,7 +19,6 @@ const SideBar = (props: LoginButtonProps) => {
   const { isDark } = useTheme();
   const [menuItems, setMenuItems] = useState<any[]>([]);
   const navigate = useNavigate();
-  const location = useLocation(); // Thêm useLocation để biết đường dẫn hiện tại
 
   useEffect(() => {
     if (user?.role) {

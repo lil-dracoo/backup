@@ -39,7 +39,7 @@ const ProfileSection = (props: ProfileSectionProps) => {
           },
         }}
       >
-        {user?.name?.charAt(0).toUpperCase()}
+        {user?.ten_tai_khoan?.charAt(0).toUpperCase()}
       </Avatar>
 
       {/* USER INFO */}
@@ -63,7 +63,7 @@ const ProfileSection = (props: ProfileSectionProps) => {
             maxWidth: 140,
           }}
         >
-          {user?.name}
+          {user?.ten_tai_khoan}
         </Typography>
 
         <Typography

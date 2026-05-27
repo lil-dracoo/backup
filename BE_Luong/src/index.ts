@@ -2,7 +2,10 @@
 import express from 'express'; // Import thư viện express để tạo server 
 import 'dotenv/config' ;
 import authRoutes from './routes/authRoutes';
+import nhanVienRoutes from './routes/nhanvienRoutes';
+import phongBanRoutes from './routes/phongbanRoutes';
 import cors from 'cors';
+import chucVuRoutes from './routes/chucvuRoutes';
 
 
 const app = express();  // Khai báo đối tượng app từ express
@@ -18,8 +21,13 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
 // Cấu hình cho routes
 authRoutes(app);
+nhanVienRoutes(app);
+phongBanRoutes(app);
+chucVuRoutes(app);
+
 
 
 app.listen(PORT , () =>{
